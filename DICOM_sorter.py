@@ -211,10 +211,14 @@ def sort_image_files_by_RS(PATH):
 	# Organize the registration (RE) files into the appropriate directories based on FrameOfReferenceUID
 	for file in list_RE:
 		d = dcm.read_file(PATH+file)
-		try:
-			frame_of_reference_uid = d.RegistrationSequence[-1].FrameOfReferenceUID
-		except:
-			frame_of_reference_uid = d.FrameOfReferenceUID
+
+		for seq in d.RegistrationSequence:
+			if seq.MatrixRegistrationSequence[0].MatrixSequence[0].FrameOfReferenceTransformationMatrix != [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]:
+				frame_of_reference_uid = seq.FrameOfReferenceUID
+		# try:
+		# 	frame_of_reference_uid = d.RegistrationSequence[-1].FrameOfReferenceUID
+		# except:
+		# 	frame_of_reference_uid = d.FrameOfReferenceUID
 
 		# Catch exception if RE file doesn't belong to any of the images downloaded
 		try:
