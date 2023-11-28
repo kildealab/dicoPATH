@@ -68,7 +68,7 @@ if __name__ == "__main__":
 	
 	for patient in sys.argv[1:]:
 		if patient == "all":
-			list_patients_to_reformat = sorted([f for f in os.listdir(PATH)],key=int)
+			list_patients_to_reformat = sorted([f for f in os.listdir(PATH) if 'b' not in f and 'old' not in f],key=int)
 
 		# Check if command line arguments correspond to existing patient directories
 		elif os.path.exists(PATH+patient):
