@@ -164,7 +164,7 @@ def sort_image_files_by_RS(PATH):
 
 		# Do not gather CT files for "PlanAdapt"/"QA"/"TEST" structure sets, as these are test calculations done on the planning CT
 		# Note: this code keeps the PlanAdapt/QA/TEST directories, but it could be deleted as it won't be useful.
-		if all(substring not in d.StructureSetLabel.lower() for substring in ignore_terms) and (d.StructureSetLabel[-1].isdigit() or 'CBCT' in d.StructureSetLabel):
+		if all(substring not in d.StructureSetLabel.lower() for substring in ignore_terms) and ((d.StructureSetLabel[-1].isdigit() and 'CBCT' not in d.StructureSetLabel) or 'kV_CBCT' in d.StructureSetLabel):
 			# For each image slice referenced in RS file, move the correspondint CT file into the new directory
 			# Note: the CT files are automatically named as "CT.ReferencedSOPInstanceUID.dcm"
 			for img in d.ReferencedFrameOfReferenceSequence[0].RTReferencedStudySequence[0].RTReferencedSeriesSequence[0].ContourImageSequence:
@@ -177,7 +177,7 @@ def sort_image_files_by_RS(PATH):
 			# print(d.StructureSetLabel)
 			# print(len(d.StructureSetLabel))
 			
-			if 'CT' in d.StructureSetLabel and len(d.StructureSetLabel) >= 9:
+			if 'CT_' in d.StructureSetLabel and len(d.StructureSetLabel) >= 9:
 				update_uid_dict = True
 
 		else:
@@ -329,7 +329,7 @@ if __name__ == "__main__":
 	
 	for patient in sys.argv[1:]:
 		if patient == "all":
-			list_patients_to_sort = sorted([f for f in os.listdir(PATH)],key=int)
+			list_patients_to_sort = sorted([f for f in os.listdir(PATH) if 'b' not in f],key=int)
 		
 		# Check if command line arguments correspond to existing patient directories
 		elif os.path.exists(PATH+patient):
