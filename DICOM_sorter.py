@@ -322,7 +322,7 @@ def organize_multiple_patients(list_patients, PATH):
 
 
 if __name__ == "__main__":
-	
+	start = time.time()
 	PATH = '/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted/' # Path to patient directories
 	list_patients_to_sort = [] # Patient directories to sort
 
@@ -342,3 +342,6 @@ if __name__ == "__main__":
 
 	# TO DO: fix issue where mutiple CT with diff names
 
+	end = time.time()
+	print("***TOTAL TIME***")
+	print(end-start,"seconds")
