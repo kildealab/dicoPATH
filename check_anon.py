@@ -12,12 +12,28 @@ unsorted_checked = False
 
 
 def identity_removed(file_path,file_name):
-    if dcm.read_file(os.path.join(file_path,file_name)).PatientIdentityRemoved != 'YES':
-        
-        print("ATTENTION: Found DICOMs with identifiers in Patient " + patient + " not de-identified in directory " + file_path)
-        return False
-    else:
-        return True
+    try:
+
+        if dcm.read_file(os.path.join(file_path,file_name)).PatientIdentityRemoved != 'YES':
+            
+            print("ATTENTION: Found DICOMs with identifiers in " + file_path)
+            return False
+        else:
+            return True
+
+    except Exception as e:
+        d_file = dcm.read_file(os.path.join(file_path,file_name))
+        if d_file.PatientSex != ''  or d_file.PatientBirthDate != '' or '^' in d_file.PatientName or ' ' in d_file.PatientName or ',' in d_file.patientName:
+            print("ATTENTION: Found DICOMs with identifiers in Patient "+patient+" directory "+file_path)
+            return False
+
+            
+        else:
+           # if e =="'FileDataset' object has no attribute 'PatientIdentityRemoved'":
+
+            print("Error with file " + file_path+f,":",e)
+            return True
+
     #print( dcm.read_file(os.path.join(PATH,patient,file_path,file_name)).PatientIdentityRemoved )
 
 #upper_level_done = False
@@ -30,6 +46,7 @@ for patient in sorted(os.listdir(PATH)):
     patient_path = os.path.join(PATH,patient)
     for d in os.listdir(patient_path):
         if d.endswith(".dcm") and not (one_per_unsorted and unsorted_checked):
+            
             is_deidentified *= identity_removed(patient_path,d)
             unsorted_checked = True 
 
@@ -39,21 +56,22 @@ for patient in sorted(os.listdir(PATH)):
             file_path = os.path.join(patient_path,d) # Assuming only one level of directories
             for f in os.listdir(file_path):
                 if os.path.isfile(os.path.join(file_path,f)):
-                   # print("**************************************************************************************************************************************************") 
+                    #print("**************************************************************************************************************************************************") 
                     #print(dcm.read_file(os.path.join(file_path,f)))
-                    try:
-                        is_deidentified *= identity_removed(file_path,f)
-                        if one_per_dir:
-                            break
+                    
+                    is_deidentified *= identity_removed(file_path,f)
+                    
+                    if one_per_dir:
+                        break
 
-                    except Exception as e:
-                        print("Error with file " + file_path+f,":",e)
                     #print(f)
-                    exit
+                    #
                 else:
                     print(file_path,f,"is not a file. Fix directory hierarchy.")
     if is_deidentified:
         print("OK")
+    else:
+        print("CAUTION - "+patient+"  NOT DEINTIFIED")
 
         
 print("--- %s seconds ---" % (time.time() - start_time))
