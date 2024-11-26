@@ -1,10 +1,14 @@
 import os, sys, time
 import pydicom as dcm
+from config import config
 
 # dict_class_UID contains image class UIDs and their abbreviations. 
 # At the moment, it contains CT, MR, PE and RI UIDs, but more can be added.
 # List of image class UIDs: https://dicom.nema.org/dicom/2013/output/chtml/part04/sect_B.5.html
-dict_class_UID = {'1.2.840.10008.5.1.4.1.1.2': 'CT', '1.2.840.10008.5.1.4.1.1.481.1': 'RI', '1.2.840.10008.5.1.4.1.1.4': 'MR', '1.2.840.10008.5.1.4.1.1.128':'PE'}
+dict_class_UID = {'1.2.840.10008.5.1.4.1.1.2': 'CT', 
+				  '1.2.840.10008.5.1.4.1.1.481.1': 'RI', 
+				  '1.2.840.10008.5.1.4.1.1.4': 'MR', 
+				  '1.2.840.10008.5.1.4.1.1.128':'PE'}
 
 
 def remove_RI_RT_files(PATH):
@@ -123,7 +127,7 @@ def sort_image_files_by_RS(PATH):
 	RE_count = 0
 	RS_count = 0
 	RD_count = 0
-	RP_count = 0
+	RP_count = 0#['copy', 'adap', 'planad', 'qa', 'test','pa','do not use']
 	
 	# Get all non-CT files
 	file_list = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f)) if 'CT' not in f]
@@ -160,11 +164,11 @@ def sort_image_files_by_RS(PATH):
 		update_uid_dict = False
 
 		# list of words to ignore in if statement below
-		ignore_terms = ['copy', 'adap', 'planad', 'qa', 'test','pa','do not use']
+		ignore_terms = config['ignore_keywords_in_plan'] #['copy', 'adap', 'planad', 'qa', 'test','pa','do not use']
 
 		# Do not gather CT files for "PlanAdapt"/"QA"/"TEST" structure sets, as these are test calculations done on the planning CT
 		# Note: this code keeps the PlanAdapt/QA/TEST directories, but it could be deleted as it won't be useful.
-		if all(substring not in d.StructureSetLabel.lower() for substring in ignore_terms) and ((d.StructureSetLabel[-1].isdigit() and 'CBCT' not in d.StructureSetLabel) or 'kV_CBCT' in d.StructureSetLabel):
+		if all(substring.lower() not in d.StructureSetLabel.lower() for substring in ignore_terms) and ((d.StructureSetLabel[-1].isdigit() and 'CBCT' not in d.StructureSetLabel) or 'kV_CBCT' in d.StructureSetLabel):
 			# For each image slice referenced in RS file, move the correspondint CT file into the new directory
 			# Note: the CT files are automatically named as "CT.ReferencedSOPInstanceUID.dcm"
 			for img in d.ReferencedFrameOfReferenceSequence[0].RTReferencedStudySequence[0].RTReferencedSeriesSequence[0].ContourImageSequence:
@@ -323,13 +327,21 @@ def organize_multiple_patients(list_patients, PATH):
 
 if __name__ == "__main__":
 	start = time.time()
-	PATH = '/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted/' # Path to patient directories
+
+	# from config import config
+	PATH = config['PATH']
+	#PATH = '/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted/'
+	# PATH = '/mnt/iDriveShare/Trey/images/'#'/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted/' # Path to patient directories
 	list_patients_to_sort = [] # Patient directories to sort
 
 	
 	for patient in sys.argv[1:]:
-		if patient == "all":
-			list_patients_to_sort = sorted([f for f in os.listdir(PATH) if 'b' not in f and 'old' not in f],key=int)
+		if patient == "all" or '': # TO DO EMPTY STRING DOESN'T WORK, Prob check sys.argc length above
+				# if all(substring.lower() not in d.StructureSetLabel.lower() for substring in ignore_terms)
+			ignore_pt_terms = config['ignore_keywords_in_pt_dirname']
+			list_patients_to_sort = sorted([f for f in os.listdir(PATH) 
+				if all(substring.lower() not in d.StructureSetLabel.lower() for substring in ignore_pt_terms)],key=int)
+			# list_patients_to_sort = sorted([f for f in os.listdir(PATH) if 'b' not in f and 'old' not in f],key=int)
 		
 		# Check if command line arguments correspond to existing patient directories
 		elif os.path.exists(PATH+patient):
