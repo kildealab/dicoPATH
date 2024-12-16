@@ -180,8 +180,9 @@ def sort_image_files_by_RS(PATH):
 					CT_count += 1
 			# print(d.StructureSetLabel)
 			# print(len(d.StructureSetLabel))
-			
-			if 'CT_' in d.StructureSetLabel and len(d.StructureSetLabel) >= 9:
+
+			structset_label = d.StructureSetLabel
+			if config['CT_keyword'] in structset_label and len(structset_label) >= config['CT_name_min_length'] and len(structset_label) <= config['CT_name_max_length']:
 				update_uid_dict = True
 
 		else:
@@ -336,7 +337,7 @@ if __name__ == "__main__":
 
 	if len(sys.argv[1:]) == 0:
 		print("WARNING: No files sorted.")#to do raise actual warning
-		print("Please specify patient directories or write 'all'.")
+		print("Please specify patient directory(ies) or write 'all' to sort all patients.")
 	for patient in sys.argv[1:]:
 		if patient.lower() == "all": # TO DO EMPTY STRING DOESN'T WORK, Prob check sys.argc length above
 				# if all(substring.lower() not in d.StructureSetLabel.lower() for substring in ignore_terms)
