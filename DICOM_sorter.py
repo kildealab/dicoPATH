@@ -334,13 +334,19 @@ if __name__ == "__main__":
 	# PATH = '/mnt/iDriveShare/Trey/images/'#'/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted/' # Path to patient directories
 	list_patients_to_sort = [] # Patient directories to sort
 
-	
+	if len(sys.argv[1:]) == 0:
+		print("WARNING: No files sorted.")#to do raise actual warning
+		print("Please specify patient directories or write 'all'.")
 	for patient in sys.argv[1:]:
-		if patient == "all" or '': # TO DO EMPTY STRING DOESN'T WORK, Prob check sys.argc length above
+		if patient.lower() == "all": # TO DO EMPTY STRING DOESN'T WORK, Prob check sys.argc length above
 				# if all(substring.lower() not in d.StructureSetLabel.lower() for substring in ignore_terms)
 			ignore_pt_terms = config['ignore_keywords_in_pt_dirname']
-			list_patients_to_sort = sorted([f for f in os.listdir(PATH) 
-				if all(substring.lower() not in d.StructureSetLabel.lower() for substring in ignore_pt_terms)],key=int)
+			if len(ignore_pt_terms) == 0: # to do: what if patient isnt a number, then sorting by int wont work
+				list_patients_to_sort = sorted([f for f in os.listdir(PATH)])#,key=int
+			else:
+				list_patients_to_sort = sorted([f for f in os.listdir(PATH) 
+					if all(substring.lower() not in f.lower() for substring in ignore_pt_terms)])#,key=int
+			print(list_patients_to_sort)
 			# list_patients_to_sort = sorted([f for f in os.listdir(PATH) if 'b' not in f and 'old' not in f],key=int)
 		
 		# Check if command line arguments correspond to existing patient directories
