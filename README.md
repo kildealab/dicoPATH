@@ -40,11 +40,11 @@ The code expects that each patient has their own directory with a dump of unorga
 
 ```
 /path/to/patient/directories/ 
-├── patient1 \n
-│   ├── CT....dcm \n
-│   ├── CT....dcm \n
-│   ├── ... \n
-│   └── RS....dcm \n
+├── patient1
+│   ├── CT....dcm 
+│   ├── CT....dcm 
+│   ├── ... 
+│   └── RS....dcm 
 ├── patient2
 |   ├── CT....dcm
 |   ├── CT....dcm
