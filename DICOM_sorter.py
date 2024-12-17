@@ -208,7 +208,7 @@ def sort_image_files_by_RS(PATH):
 		update_uid_dict = False
 
 		# list of words to ignore in if statement below
-		ignore_terms = config['ignore_keywords_in_plan'] #['copy', 'adap', 'planad', 'qa', 'test','pa','do not use']
+		ignore_terms = config['ignore_keywords_in_CT'] #['copy', 'adap', 'planad', 'qa', 'test','pa','do not use']
 
 		# Do not gather CT files for "PlanAdapt"/"QA"/"TEST" structure sets, as these are test calculations done on the planning CT
 		# Note: this code keeps the PlanAdapt/QA/TEST directories, but it could be deleted as it won't be useful.

@@ -1,12 +1,18 @@
 import os
+import platform
 
-list_folders = [970,971,972,973,974,975,976,977,978,979,980,990,991,1001,1013,1019,1021,1026,1027,1036,1044,1048,1052,1053,1056,1058,1059,1071,1074,1075,1081,1089,1094,1095,1100,1109,1130,1132,1143,1145,1148,1149,1165,1167,1169,1175,1177,1183,1184,1188,1189,1198,1209,1215,1221,1233,1252,1254,1255,1262,1264,1268,1269,1271,1275,1288,1289,1296,1306,1311,1314,1315,1317,1325,1328,1331,1332,1333,1340,1341,1343,1350,1360,1364,1374,1380,1381,1393,1396,1400,1402,1420,1428,1432,1433,1434,1438,1443,1444,1449,1461,1462,1464,1466,1467,1470,1471,1481,1482,1488,1489,1493,1494,1497,1502,1503,1506,1508,1511,1514,1515,1518,1520,1521,1522]
+list_folders = ['dir1','dir2']
 
-path = '/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted'
+from config import config
+PATH = config['PATH']
+
 
 for folder in list_folders:
     folder_path=path+str(folder)
     if not os.path.exists(folder_path):
-        os.system("sudo mkdir " + folder_path)
+        if platform.system() == "Windows":
+            os.makedirs(folder_path)
+        else:
+            os.system("sudo mkdir " + folder_path)
 
 

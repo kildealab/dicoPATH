@@ -4,7 +4,8 @@ import time
 
 start_time = time.time()
 
-PATH = '/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted/'
+from config import config
+PATH = config['PATH']
 
 one_per_dir = True
 one_per_unsorted = True
