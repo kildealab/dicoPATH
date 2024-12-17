@@ -1,6 +1,8 @@
 import os, sys, time
 import pydicom as dcm
 from config import config
+import platform
+import warnings
 
 # dict_class_UID contains image class UIDs and their abbreviations. 
 # At the moment, it contains CT, MR, PE and RI UIDs, but more can be added.
@@ -9,6 +11,10 @@ dict_class_UID = {'1.2.840.10008.5.1.4.1.1.2': 'CT',
 				  '1.2.840.10008.5.1.4.1.1.481.1': 'RI', 
 				  '1.2.840.10008.5.1.4.1.1.4': 'MR', 
 				  '1.2.840.10008.5.1.4.1.1.128':'PE'}
+
+system = platform.system()
+print(system)
+
 
 
 def remove_RI_RT_files(PATH):
@@ -30,29 +36,48 @@ def remove_RI_RT_files(PATH):
 	# Create RT and RI directories if they don't exist
 	RT_path = PATH + "RT"
 	if not os.path.exists(RT_path):
-		os.system("sudo mkdir " + RT_path)
+		if system == "Windows":
+			os.makedirs(RT_path)	
+		else:
+			os.system("sudo mkdir " + RT_path)
 		print("Created directory "+RT_path)
 
 	RI_path = PATH + "RI"
 	if not os.path.exists(RI_path):
-		os.system("sudo mkdir " + RI_path)
+		if system == "Windows":
+			os.makedirs(RI_path)			
+		else:			
+			os.system("sudo mkdir " + RI_path)
 		print("Created directory "+RI_path)
 	
 	# Go through each file in list and move into associated directory
 	for file in file_list:
 		if 'RT' in file:
-			os.system("sudo mv " + PATH+file +" " + RT_path+"/"+file)
+			if system == "Windows":
+				os.system("move "+PATH+file+" "+RT_path)
+			else:
+				os.system("sudo mv " + PATH+file +" " + RT_path+"/"+file)
+				
 			RT_count += 1
 		
 		elif 'RI' in file:
-			os.system("sudo mv " + PATH+file +" " + RI_path+"/"+file)
+			if system == "Windows":
+				os.system("move "+PATH+file+" "+RI_path)
+			else:
+				os.system("sudo mv " + PATH+file +" " + RI_path+"/"+file)
+				
 			RI_count += 1
 		
 		elif 'RE' in file:
 			# Check if registration file is referencing an "RI" image file
 			RE_class = dcm.read_file(PATH+file).ReferencedSeriesSequence[0].ReferencedInstanceSequence[0].ReferencedSOPClassUID
 			if dict_class_UID[RE_class] == 'RI':
-				os.system("sudo mv " + PATH+file +" " + RI_path+"/"+file)
+				if system == "Windows":
+					os.system("move "+PATH+file+" "+RI_path)
+				else:
+					os.system("sudo mv " + PATH+file +" " + RI_path+"/"+file)
+				
+
 				RE_count += 1
 	print("--------------------------------------------------------------------------------")
 	print("Files moved: ", RT_count, " RT, ", RI_count, " RI, ",RE_count, " RE")
@@ -78,18 +103,31 @@ def remove_non_CT_image_files(PATH):
 	if num_PE > 0:
 		PE_path = PATH + "PE"
 		if not os.path.exists(PE_path):
-			os.system("sudo mkdir " + PE_path)
+			if system == "Linux":
+				os.system("sudo mkdir " + PE_path)
+			elif system == "Windows":
+				os.makedirs(PE_path)
 			print("Created directory "+PE_path)
+
 		for file in file_list_PE:
-			os.system("sudo mv "+PATH+file+" "+PE_path+"/"+file)
+			if system == "Windows":
+				os.system("move "+PATH+file+" "+PE_path)
+			else:
+				os.system("sudo mv "+PATH+file+" "+PE_path+"/"+file)
 	
 	if num_MR > 0:
 		MR_path = PATH + "MR"
 		if not os.path.exists(MR_path):
-			os.system("sudo mkdir " + MR_path)
+			if system == "Linux":
+				os.system("sudo mkdir " + MR_path)
+			elif system == "Windows":
+				os.makedirs(PE_path)
 			print("Created directory "+MR_path)
 		for file in file_list_MR:
-			os.system("sudo mv "+PATH+file+" "+MR_path+"/"+file)
+			if system == "Windows":
+				os.system("move "+PATH+file+ " " + MR_path)
+			else:
+				os.system("sudo mv "+PATH+file+" "+MR_path+"/"+file)
 
 	if num_PE + num_MR > 0:
 		print("--------------------------------------------------------------------------------")
@@ -154,11 +192,17 @@ def sort_image_files_by_RS(PATH):
 
 		# Create new directory if not exists
 		if not os.path.exists(new_path):
-			os.system("sudo mkdir " + new_path)
+			if system == "Windows":
+				os.makedirs(new_path)
+			else:
+				os.system("sudo mkdir " + new_path)
 			print("Created directory "+new_path)
 	
 		# Move current RS file into new directory
-		os.system("sudo mv " + PATH+file +" " + new_path+"/"+file)
+		if system == "Windows":
+			os.system("move "+PATH+file+" "+new_path)
+		else:
+			os.system("sudo mv " + PATH+file +" " + new_path+"/"+file)
 		RS_count += 1
 
 		update_uid_dict = False
@@ -173,7 +217,10 @@ def sort_image_files_by_RS(PATH):
 			# Note: the CT files are automatically named as "CT.ReferencedSOPInstanceUID.dcm"
 			for img in d.ReferencedFrameOfReferenceSequence[0].RTReferencedStudySequence[0].RTReferencedSeriesSequence[0].ContourImageSequence:
 				uid = img.ReferencedSOPInstanceUID 
-				os_cmd = "sudo mv " + PATH+"CT."+uid+".dcm" +" " + new_path+"/"+"CT."+uid+".dcm"
+				if system == "Windows":
+					os_cmd = "move "+PATH+"CT."+uid+".dcm" +" " + new_path+"/"+"CT."+uid+".dcm"
+				else:
+					os_cmd = "sudo mv " + PATH+"CT."+uid+".dcm" +" " + new_path+"/"+"CT."+uid+".dcm"
 
 				# Only increase CT count if command processed
 				if os.system(os_cmd) == 0:
@@ -204,7 +251,10 @@ def sort_image_files_by_RS(PATH):
 				if not os.path.exists(PATH+"CT."+uid+".dcm"):
 					break
 
-				os_cmd = "sudo mv " + PATH+"CT."+uid+".dcm" +" " + new_path+"/"+"CT."+uid+".dcm"
+				if system == "Windows":
+					os_cmd = "move " + PATH+"CT."+uid+".dcm" +" " + new_path+"/"+"CT."+uid+".dcm"
+				else:
+					os_cmd = "sudo mv " + PATH+"CT."+uid+".dcm" +" " + new_path+"/"+"CT."+uid+".dcm"
 
 				# Only increase CT count if command processed
 				if os.system(os_cmd) == 0:
@@ -227,7 +277,11 @@ def sort_image_files_by_RS(PATH):
 
 		# Catch exception if RE file doesn't belong to any of the images downloaded
 		try:
-			os.system("sudo mv " + PATH+file +" " + uid_dict[frame_of_reference_uid]+"/"+file)
+			if system == "Windows":
+				os.system("move " + PATH+file +" " + uid_dict[frame_of_reference_uid]+"/"+file)
+			else:
+				os.system("sudo mv " + PATH+file +" " + uid_dict[frame_of_reference_uid]+"/"+file)
+
 		except:
 			print("could not move file ", file, " with frame of ref uid ",frame_of_reference_uid)
 		else:
@@ -241,7 +295,10 @@ def sort_image_files_by_RS(PATH):
 
 		# Catch exception if RD file doesn't belong to any of the images downloaded
 		try:
-			os.system("sudo mv " + PATH+file +" " + uid_dict[frame_of_reference_uid]+"/"+file)
+			if system == "Windows":
+				os.system("sudo mv " + PATH+file +" " + uid_dict[frame_of_reference_uid]+"/"+file)
+			else:
+				os.system("move " + PATH+file +" " + uid_dict[frame_of_reference_uid]+"/"+file)
 		except:
 			print("could not move file ", file, " with frame of ref uid ",frame_of_reference_uid)
 		else:
@@ -254,7 +311,10 @@ def sort_image_files_by_RS(PATH):
 
 		# Catch exception if RP file doesn't belong to any of the images downloaded
 		try:
-			os.system("sudo mv " + PATH+file +" " + uid_dict[frame_of_reference_uid]+"/"+file)
+			if system == "Windows":
+				os.system("move " + PATH+file +" " + uid_dict[frame_of_reference_uid]+"/"+file)
+			else:
+				os.system("sudo mv " + PATH+file +" " + uid_dict[frame_of_reference_uid]+"/"+file)
 		except:
 			print("could not move file ", file, " with frame of ref uid ",frame_of_reference_uid)
 		else:
@@ -291,7 +351,11 @@ def remove_unneeded_RE_files(PATH):
 
 		if ref_image_class != 'CT' and os.path.exists(PATH+ref_image_class):
 			print("Moving "+ref_image_class+" registration file.")
-			os.system("sudo mv " + PATH+file +" " + PATH+ref_image_class+"/"+file)
+			if system == "Windows":
+				os.system("move " + PATH+file +" " + PATH+ref_image_class+"/"+file)
+			else:
+				os.system("sudo mv " + PATH+file +" " + PATH+ref_image_class+"/"+file)
+
 
 		# else:
 		# 	print("Removing "+ref_image_class+" registration file.")
