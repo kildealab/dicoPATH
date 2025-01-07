@@ -61,6 +61,7 @@ if __name__ == "__main__":
     start = time.time()
 
     PATH = config['PATH']
+    print_results = config['print_check_results']
 
     list_patients = []
 
@@ -86,7 +87,7 @@ if __name__ == "__main__":
     
 
     if len(list_patients) > 0:
-        generate_dirs_with_double_img(PATH, list_patients,print_results=True)
+        generate_dirs_with_double_img(PATH, list_patients,print_results)
         print("************************************************")
         print("See results in ./output/dirs_with_double_img.txt")
         print("************************************************")

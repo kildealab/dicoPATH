@@ -1,6 +1,6 @@
 ''' 
 Configuration variables for runing the code. See below for more information. 
-PATH is the only variable you NEED to change, but it is recomment to change the CT keywords too.
+PATH is the only variable you NEED to change, but it is recommended to change the CT keyword too.
 '''
 
 config = {
@@ -9,7 +9,8 @@ config = {
 	'CT_name_min_length':9, # minimum string length of CT name
 	'CT_name_max_length':16, # maximum string length allowed in Structure Set Label tag = 16
 	'ignore_keywords_in_CT':['copy', 'adap', 'planad', 'qa', 'test','pa','do not use'], # Words to ignore in CT names (ie not real planning CTs)
-	'ignore_keywords_in_pt_dirname':[] # Keywords in patient directories to skip, eg if you want to skip all dirs with 'old' in them
+	'ignore_keywords_in_pt_dirname':[], # Keywords in patient directories to skip, eg if you want to skip all dirs with 'old' in them
+	'print_check_results': True
 }
 
 '''

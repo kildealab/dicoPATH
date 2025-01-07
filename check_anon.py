@@ -90,6 +90,7 @@ if __name__ == "__main__":
     start = time.time()
 
     PATH = config['PATH']
+    print_results = config['print_check_results']
     ignore_pt_terms = config['ignore_keywords_in_pt_dirname']
 
     list_patients = []
@@ -116,7 +117,7 @@ if __name__ == "__main__":
     
 
     if len(list_patients) > 0:
-        patients_not_deidentified, patients_with_errors = check_deidentification(PATH, list_patients,print_results=True)
+        patients_not_deidentified, patients_with_errors = check_deidentification(PATH, list_patients,print_results)
         print("**************************************************")
         print("Number of patients checked:",len(list_patients))
         print("Patients checked:",list_patients)

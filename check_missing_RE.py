@@ -43,6 +43,7 @@ if __name__ == "__main__":
 
     PATH = config['PATH']
     ignore_pt_terms = config['ignore_keywords_in_pt_dirname']
+    print_results = config['print_check_results']
 
     list_patients = []
 
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     
 
     if len(list_patients) > 0:
-        generate_dirs_without_reg_txt(PATH, list_patients,print_results=True)
+        generate_dirs_without_reg_txt(PATH, list_patients,print_results)
         print("********************************************")
         print("See results in ./output/dirs_without_reg.txt")
         print("********************************************")

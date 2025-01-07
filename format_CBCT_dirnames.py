@@ -68,6 +68,9 @@ if __name__ == "__main__":
 	PATH = PATH = config['PATH'] # Path to patient directories
 	list_patients_to_reformat = [] # Patient directories to reformat
 
+	if len(sys.argv[1:]) == 0:
+		print("WARNING: No files checked for formatting.")#to do raise actual warning
+		print("Please specify patient directory(ies) or write 'all' to check all patients.")
 	
 	for patient in sys.argv[1:]:
 		if patient.lower() == "all":
