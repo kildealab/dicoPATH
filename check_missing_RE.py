@@ -1,47 +1,78 @@
-import os
-import sys
+import os, sys, time
 import pydicom as dcm
 from config import config
 
 
-PATH = config['PATH']
+
+def generate_dirs_without_reg_txt(PATH, patient_list,print_results = True):
+    with open('output/dirs_without_reg.txt', 'a') as f:
+        for patient in patient_list:
+            # is_reg = True
+            
+            patient_path = PATH+str(patient)+'/'
+     
+            first = True # used to write the patient id only once in the document
+
+            for folder in [i for i in os.listdir(patient_path) if 'CT_' in i]:
+                RE_files = [f for f in os.listdir(patient_path + folder) if 'RE' in f]
+                if len(RE_files) == 0:
+                    if first:
+                         f.write('\n'+str(patient)+'\n')
+                         if print_results:
+                            print('\n'+patient)
+                         first = False
+      
+                    f.write(folder+'\n')
+                    if print_results:
+                        print(folder)
 
 
-list_patients = []
+            # The following code was used to empty the directories without dicom RE files so they can be resorted with updated sorting script.
+            # No longer needed but keeping in case.
+            ''' 
+                    if '_CT_' not in folder and len(os.listdir(patient_path+folder))!=0:
+                        os.system('sudo mv '+patient_path+folder+'/* '+patient_path)
+                        is_reg = False
+            if not is_reg:
+                os.system('sudo mv '+patient_path+'*_CT_*/* ' + patient_path)
+            '''
 
-file_list = os.listdir(PATH)
 
-ignore_pt_terms = config['ignore_keywords_in_pt_dirname']
+if __name__ == "__main__":
+    start = time.time()
 
-if len(ignore_pt_terms) == 0:
-    patient_list = sorted([f for f in os.listdir(PATH)])
-else:
-    patient_list = sorted([f for f in os.listdir(PATH) 
-        if all(substring.lower() not in f.lower() for substring in ignore_pt_terms)])
+    PATH = config['PATH']
+    ignore_pt_terms = config['ignore_keywords_in_pt_dirname']
 
-with open('output/dirs_without_reg.txt', 'a') as f:
-    for patient in patient_list:
-        # is_reg = True
-        
-        patient_path = PATH+str(patient)+'/'
- 
-        first = True # used to write the patient id only once in the document
+    list_patients = []
 
-        for folder in [i for i in os.listdir(patient_path) if 'CT_' in i]:
-            RE_files = [f for f in os.listdir(patient_path + folder) if 'RE' in f]
-            if len(RE_files) == 0:
-                if first:
-                     f.write('\n'+str(patient)+'\n')
-                     first = False
-  
-                f.write(folder+'\n')
+    if len(sys.argv[1:]) == 0:
+        print("WARNING: No files checked for RE.")#to do raise actual warning
+        print("Please specify patient directory(ies) or write 'all' to check all patients.")
+    
+    for patient in sys.argv[1:]:
+        if patient.lower() == "all":
+            
+            if len(ignore_pt_terms) == 0: 
+                list_patients = sorted([f for f in os.listdir(PATH)])
+            else:
+                list_patients = sorted([f for f in os.listdir(PATH) 
+                    if all(substring.lower() not in f.lower() for substring in ignore_pt_terms)])#,key=int
+            
 
-        # The following code was used to empty the directories without dicom RE files so they can be resorted with updated sorting script.
-        # No longer needed but keeping in case.
-        ''' 
-                if '_CT_' not in folder and len(os.listdir(patient_path+folder))!=0:
-                    os.system('sudo mv '+patient_path+folder+'/* '+patient_path)
-                    is_reg = False
-        if not is_reg:
-            os.system('sudo mv '+patient_path+'*_CT_*/* ' + patient_path)
-        '''
+        # Check if command line arguments correspond to existing patient directories
+        elif os.path.exists(PATH+patient):
+            list_patients.append(patient)
+        else:   
+            print("Patient directory "+ PATH+patient + " does not exist.")
+    
+
+    if len(list_patients) > 0:
+        generate_dirs_without_reg_txt(PATH, list_patients,print_results=True)
+        print("********************************************")
+        print("See results in ./output/dirs_without_reg.txt")
+        print("********************************************")
+
+    end = time.time()
+    print("***TOTAL TIME***")
+    print(end-start,"seconds")
