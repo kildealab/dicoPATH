@@ -96,15 +96,15 @@ with open('output/dirs_without_reg.txt', 'a') as f:
        # if not is_reg:
             #os.system('sudo mv '+patient_path+'*_CT_*/* ' + patient_path)
 
-for file in [i for i in os.listdir(patient_path) if '_CBCT_' in i]:
-    for f in os.listdir(patient_path+file):
-        if 'CT' in f:
-            d = dcm.read_file(patient_path+file+'/'+f)
-            print(d.FrameOfReferenceUID)
-            list_patients.append(d.FrameOfReferenceUID)
-            break
+# for file in [i for i in os.listdir(patient_path) if '_CBCT_' in i]:
+#     for f in os.listdir(patient_path+file):
+#         if 'CT' in f:
+#             d = dcm.read_file(patient_path+file+'/'+f)
+#             print(d.FrameOfReferenceUID)
+#             list_patients.append(d.FrameOfReferenceUID)
+#             break
 
-# print(list_patients)
+# # print(list_patients)
 # print(list_patients_2)
 # for patient in list_patients:
 #     if patient not in list_patients_2:

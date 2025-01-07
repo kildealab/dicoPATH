@@ -1,7 +1,9 @@
 
 import os,sys
 from config import config
-# TO DO: This only works for my specific case. Will make general to change any format.
+# Note: changes CBCT directory name formatting from the newer version of Varian Eclipse (v18) to older versions for consistency.
+# v18: kVCBCT_01c01
+# older version: kv_CBCT_01c
 
 def find_bad_CBCT_files(patient_path):
 	"""
@@ -76,7 +78,7 @@ if __name__ == "__main__":
 				list_patients_to_reformat = sorted([f for f in os.listdir(PATH) 
 					if all(substring.lower() not in f.lower() for substring in ignore_pt_terms)])#,key=int
 			
-			list_patients_to_reformat = sorted([f for f in os.listdir(PATH) if 'b' not in f and 'old' not in f],key=int)
+			# list_patients_to_reformat = sorted([f for f in os.listdir(PATH) if 'b' not in f and 'old' not in f],key=int)
 
 		# Check if command line arguments correspond to existing patient directories
 		elif os.path.exists(PATH+patient):
