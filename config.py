@@ -1,6 +1,6 @@
 ''' 
 Configuration variables for runing the code. See below for more information. 
-PATH is the only variable you NEED to change.
+PATH is the only variable you NEED to change, but it is recomment to change the CT keywords too.
 '''
 
 config = {

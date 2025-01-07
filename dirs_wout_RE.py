@@ -1,9 +1,11 @@
 import os
 import sys
 import pydicom as dcm
+from config import config
 
 #PATH = '/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted/'
-PATH='/mnt/iDriveShare/Trey/images/'
+# PATH='/mnt/iDriveShare/Trey/images/'
+PATH = config['PATH']
 # files = os.listdir('/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted/')
 # for file in files:
 #     imgs= os.listdir('/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted/'+file+'/')
@@ -12,22 +14,22 @@ PATH='/mnt/iDriveShare/Trey/images/'
 #             print(file)
 
 list_patients = []
-list_patients_2 = []
-patient = '968'
-patient_path = PATH + patient + '/'
-CBCT_path = patient_path+'20230420_kV_CBCT_13g/'
+# list_patients_2 = []
+# patient = '968'
+# patient_path = PATH + patient + '/'
+# CBCT_path = patient_path+'20230420_kV_CBCT_13g/'
 
-if len(sys.argv) > 1:
-    print(sys.argv)
-    for arg in sys.argv[1:]:
-        patient_path = PATH+arg+'/'
-        print(patient_path)
-        for folder in [i for i in os.listdir(patient_path) if 'kV_CBCT_' in i and 'X' not in i]:
-            RE_files = [f for f in os.listdir(patient_path + folder) if 'RE' in f]
-            if len(RE_files) == 0:
-                print(folder)
+# if len(sys.argv) > 1:
+#     print(sys.argv)
+#     for arg in sys.argv[1:]:
+#         patient_path = PATH+arg+'/'
+#         print(patient_path)
+#         for folder in [i for i in os.listdir(patient_path) if 'kV_CBCT_' in i and 'X' not in i]:
+#             RE_files = [f for f in os.listdir(patient_path + folder) if 'RE' in f]
+#             if len(RE_files) == 0:
+#                 print(folder)
 
-    quit()
+#     quit()
 
 
 '''
@@ -60,11 +62,18 @@ for file in os.listdir(CT_path):
         #break
 '''
 file_list = os.listdir(PATH)
-patients_to_avoid = ['600','670','704','730','746','842','944']
-patient_list = sorted([int(p) for p in file_list if 'b' not in p and 'old' not in p and p not in patients_to_avoid])
+# patients_to_avoid = ['600','670','704','730','746','842','944']
+# patient_list = sorted([int(p) for p in file_list if 'b' not in p and 'old' not in p and p not in patients_to_avoid])
 #print(patient_list)
+ignore_pt_terms = config['ignore_keywords_in_pt_dirname']
 
-with open('dirs_without_reg.txt', 'a') as f:
+if len(ignore_pt_terms) == 0:
+    patient_list = sorted([f for f in os.listdir(PATH)])
+else:
+    patient_list = sorted([f for f in os.listdir(PATH) 
+        if all(substring.lower() not in f.lower() for substring in ignore_pt_terms)])
+
+with open('output/dirs_without_reg.txt', 'a') as f:
     for patient in patient_list:
         is_reg = True
         print(patient)
@@ -95,8 +104,8 @@ for file in [i for i in os.listdir(patient_path) if '_CBCT_' in i]:
             list_patients.append(d.FrameOfReferenceUID)
             break
 
-print(list_patients)
-print(list_patients_2)
-for patient in list_patients:
-    if patient not in list_patients_2:
-        print(patient)
+# print(list_patients)
+# print(list_patients_2)
+# for patient in list_patients:
+#     if patient not in list_patients_2:
+#         print(patient)

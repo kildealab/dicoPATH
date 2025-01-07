@@ -1,18 +1,26 @@
 import os
 import sys
 import pydicom as dcm
+from config import config
 
-PATH = '/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted/'
+PATH = config['PATH'] # '/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted/'
 
 list_patients = []
 
 file_list = os.listdir(PATH)
-patients_to_avoid = ['600','670','704','730','746','842','944']
-patient_list = sorted([int(p) for p in file_list if 'b' not in p and 'old' not in p and p not in patients_to_avoid])
+# patients_to_avoid = ['600','670','704','730','746','842','944']
+ignore_pt_terms = config['ignore_keywords_in_pt_dirname']
+
+if len(ignore_pt_terms) == 0:
+    patient_list = sorted([f for f in os.listdir(PATH)])
+else:
+    patient_list = sorted([f for f in os.listdir(PATH) 
+        if all(substring.lower() not in f.lower() for substring in ignore_pt_terms)])
+# patient_list = sorted([int(p) for p in file_list if 'b' not in p and 'old' not in p and p not in patients_to_avoid])
 #print(patient_list)
 
-with open('dirs_with_double_img.txt', 'a') as f:
-    for patient in ['774']:# patient_list:
+with open('output/dirs_with_double_img.txt', 'a') as f:
+    for patient in patient_list:
         print(patient)
         patient_path = PATH+str(patient)+'/'
         #print(patient_path)
@@ -31,11 +39,11 @@ with open('dirs_with_double_img.txt', 'a') as f:
                 f.write(prev_img +"("+d0+ ') -> ' + folder + '('+d1+ ')\n')
 
                 if (d0) < (d1):
-                    f.write("Delete "+ prev_img+'\n\n')
-                    os.system('sudo mv '+patient_path+prev_img+' '+patient_path+'X'+prev_img)
+                    f.write("Older Image: "+ prev_img+'\n\n')
+                    # os.system('sudo mv '+patient_path+prev_img+' '+patient_path+'X'+prev_img)
                 else:
-                    f.write("Delete " + folder+'\n\n')
-                    os.system('sudo mv '+patient_path+folder+' '+patient_path+'X'+folder)
+                    f.write("Older Image: " + folder+'\n\n')
+                    # os.system('sudo mv '+patient_path+folder+' '+patient_path+'X'+folder)
 
             prev_img = folder
 '''

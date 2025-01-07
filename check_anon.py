@@ -1,6 +1,7 @@
 import pydicom as dcm
 import os
 import time
+from config import config
 
 start_time = time.time()
 

@@ -1,5 +1,6 @@
 
 import os,sys
+from config import config
 # TO DO: This only works for my specific case. Will make general to change any format.
 
 def find_bad_CBCT_files(patient_path):
@@ -62,12 +63,19 @@ def refomat_multiple_patients(list_patients,PATH):
 
 if __name__ == "__main__":
 	
-	PATH = '/mnt/iDriveShare/Kayla/CBCT_images/kayla_extracted/' # Path to patient directories
+	PATH = PATH = config['PATH'] # Path to patient directories
 	list_patients_to_reformat = [] # Patient directories to reformat
 
 	
 	for patient in sys.argv[1:]:
-		if patient == "all":
+		if patient.lower() == "all":
+			ignore_pt_terms = config['ignore_keywords_in_pt_dirname']
+			if len(ignore_pt_terms) == 0: 
+				list_patients_to_reformat = sorted([f for f in os.listdir(PATH)])
+			else:
+				list_patients_to_reformat = sorted([f for f in os.listdir(PATH) 
+					if all(substring.lower() not in f.lower() for substring in ignore_pt_terms)])#,key=int
+			
 			list_patients_to_reformat = sorted([f for f in os.listdir(PATH) if 'b' not in f and 'old' not in f],key=int)
 
 		# Check if command line arguments correspond to existing patient directories
