@@ -1,3 +1,10 @@
+# Filename: check_missing_RE.py
+# Author: Kayla O'Sullivan-Steben
+# Date Created: November 28, 2023
+# Description: Checks which imaging subdirectories don't contain DICOM registration files. 
+
+
+# Import statements
 import os, sys, time
 import pydicom as dcm
 from config import config
@@ -5,6 +12,15 @@ from config import config
 
 
 def generate_dirs_without_reg_txt(PATH, patient_list,print_results = True):
+    """
+    generate_dirs_without_reg_txt   Loops through each image subdirectory in each patient directory to see if there is a registration
+                                    file present, assuming it is in the form of 'RE*.dcm', where * is anything. The results are written
+                                    in the following text file: ./output/dirs_without_reg.txt
+
+    :param PATH: General path to patient directories.
+    :param patient_list: List of patient directories to go through.
+    :param print_results: Prints the results to console as it goes through each patient.
+    """
     with open('output/dirs_without_reg.txt', 'a') as f:
         for patient in patient_list:
             # is_reg = True

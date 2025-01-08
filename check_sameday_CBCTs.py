@@ -1,10 +1,23 @@
+# Filename: check_sameday_CBCTs.py
+# Author: Kayla O'Sullivan-Steben
+# Date Created: November 28, 2023
+# Description: Checks for patients with two CBCTs on the same day and same tx fraction and determines which is older.
+
 import os, sys, time
 import pydicom as dcm
 from config import config
 
 
-
 def generate_dirs_with_double_img(PATH,patient_list,print_results=True):
+    """
+    generate_dirs_without_reg_txt   Loops through each image subdirectory in each patient directory to see if there is a registration
+                                    file present, assuming it is in the form of 'RE*.dcm', where * is anything. The results are written
+                                    in the following text file: ./output/dirs_without_reg.txt
+
+    :param PATH: General path to patient directories.
+    :param patient_list: List of patient directories to go through.
+    :param print_results: Prints the results to console as it goes through each patient.
+    """
 
     with open('output/dirs_with_double_img.txt', 'a') as f:
         for patient in patient_list:

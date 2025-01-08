@@ -1,9 +1,28 @@
+# Filename: check_anon.py
+# Author: Kayla O'Sullivan-Steben
+# Date Created: October 10, 2024
+# Description: Checks whether DICOM files have been deidentified on export from TPS.
+
 import pydicom as dcm
 import os, sys, time
 from config import config
 
+patients_not_deidentified = []
+patients_with_errors = []
 
 def identity_removed(file_path,file_name,patient):
+    """
+    identity_removed    Checks whether a DICOM file has been deidentified (patient identifiers removed). 
+                        First checks if the tag PatientIdentityRemoved = 'YES', which is set on export from the TPS
+                        when anonymization is selected. If error, checks if DOB, sex are blank and if '^' or ' ' 
+                        are in the name (typically used to separate first and last names).
+
+    :param file_path: Path to the DICOM file.
+    :param file_name: DICOM file name.
+    :param patient: Current patient id (used to track which patient is being checked).
+
+    :return: bool True or False indicating if a DICOM file has been deidentified.
+    """
     try:
 
         if dcm.read_file(os.path.join(file_path,file_name)).PatientIdentityRemoved != 'YES':
@@ -35,15 +54,20 @@ def identity_removed(file_path,file_name,patient):
 
     #print( dcm.read_file(os.path.join(PATH,patient,file_path,file_name)).PatientIdentityRemoved )
 
-#upper_level_done = False
 
 def check_deidentification(PATH,patient_list,print_results=True):
+    """
+    check_deidentification  loops through patients in list and checks whether each image directory is deidentified.
+
+    :param PATH: General path to patient directories.
+    :param patient_list: List of patient directories to go through.
+    :param print_results: Prints the results to console as it goes through each patient. 
+    """
+
     one_per_dir = True # only checking one file per directory, since should all be exported at once should be same for each
     one_per_unsorted = True # checking one file not sorted into subdirectory per patient 
     
-    patients_not_deidentified = []
-    patients_with_errors = []
-
+  
     for patient in patient_list:
         print("=====================================================================")
         print(patient)
@@ -59,7 +83,6 @@ def check_deidentification(PATH,patient_list,print_results=True):
 
 
             if os.path.isdir(os.path.join(patient_path,d)):
-                #print(d)
                 file_path = os.path.join(patient_path,d) # Assuming only one level of directories
                 for f in sorted(os.listdir(file_path)): # will choose CT before RS, sometimes tags missing in RS
                     if os.path.isfile(os.path.join(file_path,f)):
@@ -69,8 +92,7 @@ def check_deidentification(PATH,patient_list,print_results=True):
                         if one_per_dir:
                             break
 
-                        #print(f)
-                        #
+
                     else:
                         print(file_path,f,"is not a file. Fix directory hierarchy.")
         if is_deidentified:
@@ -78,7 +100,7 @@ def check_deidentification(PATH,patient_list,print_results=True):
         else:
             print("CAUTION - "+patient+"  NOT DEIDENTIFIED")
 
-    return patients_not_deidentified, patients_with_errors
+
 
 
 
@@ -117,7 +139,7 @@ if __name__ == "__main__":
     
 
     if len(list_patients) > 0:
-        patients_not_deidentified, patients_with_errors = check_deidentification(PATH, list_patients,print_results)
+        check_deidentification(PATH, list_patients,print_results)
         print("**************************************************")
         print("Number of patients checked:",len(list_patients))
         print("Patients checked:",list_patients)
