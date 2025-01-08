@@ -18,6 +18,8 @@ def generate_dirs_with_double_img(PATH,patient_list,print_results=True):
     :param patient_list: List of patient directories to go through.
     :param print_results: Prints the results to console as it goes through each patient.
     """
+    if not os.path.isdir('output'):
+        os.mkdir('output')
 
     with open('output/dirs_with_double_img.txt', 'a') as f:
         for patient in patient_list:
