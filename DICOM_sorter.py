@@ -3,7 +3,7 @@
 # Date Created: February 27, 2023
 # Description: 	Sorts planning CT, CBCT and related DIROM-RT files as exported from the Varian Eclipse TPS.	
 #				Files are sorted into dirs with names based on the name given by the associated RS file, 
-#				which is the image name seen in the TPS (eg: kV_CBCT_01a).
+#				which is the image name seen in the TPS (eg: kV_CBCT_1a).
 
 # Import statements
 import os, sys, time
