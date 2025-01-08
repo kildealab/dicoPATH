@@ -33,8 +33,8 @@ TODO
    
 ## Usage
 ### Downloading data from the Treatment Planning System
-Instructions for downloading DICOM data from the Varian Eclipse TPS (tested on versions 15 and 18) can be found here [TO DO: ADD LINK].
-Files should be exported all at once per patient, each in their own directory. 
+Instructions for downloading DICOM data from the Varian Eclipse TPS (tested on versions 15 and 18) can be found here: [TPS Download Instructions](https://docs.google.com/document/d/1NtpMWKvi45IYjV2Tp65CwWPKFmXAfJu6idoXx9AcafA/edit?usp=sharing).
+Files should be exported all at once per patient, each in their own patient directory. 
 
 The code expects that each patient has their own directory with a dump of unorganized DICOM files for all images, like so (note the patient directories can have any names):
 
@@ -76,7 +76,7 @@ To sort all patient directories in PATH:
   ```
 To sort only a subset of patient directories in PATH:
   ```
-  python DICOM_sorter.py patient1 patient1
+  python DICOM_sorter.py patient1 patient2
   ```
 TO DO: Add part about changing the CBCT directory names from v18 --> v15
 
