@@ -7,10 +7,11 @@
 # 				-----> Older version(s): kv_CBCT_1c   (though this code would convert it to kV_CBCT_01c, with the extra 0)
 
 # Import statements
-import os,sys
+import os,sys, platform
 from config import config
 
 system = platform.system()
+
 
 def find_bad_CBCT_files(patient_path):
 	"""
@@ -55,9 +56,9 @@ def reformat_directory(patient_path):
 	for d in dirs:
 		reformat_file_name(patient_path,d)
 
-def refomat_multiple_patients(list_patients,PATH):
+def reformat_multiple_patients(list_patients,PATH):
 	"""
-	refomat_multiple_patients Loops through each patient and calls reformatting function.
+	reformat_multiple_patients Loops through each patient and calls reformatting function.
 
 	:param list_patients: List of patient dirctories to go through. 
 	:param PATH: General path to patient directories.
@@ -69,12 +70,12 @@ def refomat_multiple_patients(list_patients,PATH):
 		print("--------------------------------------------------------------------------------")
 		patient_path = PATH + str(patient) + "/"
 
-		reformat_directory(patient_path)
+		reformat_directory(patient_path,system)
 
 	
 
+def main():
 
-if __name__ == "__main__":
 	
 	PATH = PATH = config['PATH'] # Path to patient directories
 	list_patients_to_reformat = [] # Patient directories to reformat
@@ -101,6 +102,7 @@ if __name__ == "__main__":
 			print("Patient directory "+ PATH+patient + " does not exist.")
 	
 
-	refomat_multiple_patients(list_patients_to_reformat, PATH)    
+	reformat_multiple_patients(list_patients_to_reformat, PATH)    
 
-	
+if __name__ == "__main__":
+    main()

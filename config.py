@@ -4,11 +4,11 @@ PATH is the only variable you NEED to change, but it is recommended to change th
 '''
 
 config = {
-	'PATH':'/path/to/patient/directories/', # list to patient directories
-	'CT_keyword':'', # A keyword present in all CT names from the TPS, helps to differentiate between CBCT names
+	'PATH':'/mnt/iDriveShare/Kayla/CBCT_images/REMOVED/', # list to patient directories
+	'CT_keyword':'CT_', # A keyword present in all CT names from the TPS, helps to differentiate between CBCT names
 	'CT_name_min_length':0, # minimum string length of CT name
 	'CT_name_max_length':16, # maximum string length allowed in Structure Set Label tag = 16
-	'ignore_keywords_in_CT':['copy', 'qa', 'test','do not use'], # Words to ignore in CT names (ie not real planning CTs)
+	'ignore_keywords_in_CT':['copy', 'adap', 'planad', 'qa', 'test','pa','do not use'], # Words to ignore in CT names (ie not real planning CTs)
 	'ignore_keywords_in_pt_dirname':[], # Keywords in patient directories to skip, eg if you want to skip all dirs with 'old' in them
 	'print_check_results': True # Prints results to console for additional scripts 
 }

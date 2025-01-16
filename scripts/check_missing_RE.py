@@ -57,7 +57,7 @@ def generate_dirs_without_reg_txt(PATH, patient_list,print_results = True):
             '''
 
 
-if __name__ == "__main__":
+def main():
     start = time.time()
 
     PATH = config['PATH']
@@ -96,3 +96,6 @@ if __name__ == "__main__":
     end = time.time()
     print("***TOTAL TIME***")
     print(end-start,"seconds")
+
+if __name__ == "__main__":
+    main()

@@ -72,7 +72,7 @@ def generate_dirs_with_double_img(PATH,patient_list,print_results=True):
             print(patient)
     '''
 
-if __name__ == "__main__":
+def main():
     start = time.time()
 
     PATH = config['PATH']
@@ -110,3 +110,7 @@ if __name__ == "__main__":
     end = time.time()
     print("***TOTAL TIME***")
     print(end-start,"seconds")
+
+
+if __name__ == "__main__":
+    main()

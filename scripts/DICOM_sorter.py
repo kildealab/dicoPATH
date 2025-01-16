@@ -398,7 +398,7 @@ def organize_multiple_patients(list_patients, PATH):
 	  
 
 
-if __name__ == "__main__":
+def main():
 	start = time.time()
 
 	# from config import config
@@ -436,3 +436,6 @@ if __name__ == "__main__":
 	end = time.time()
 	print("***TOTAL TIME***")
 	print(end-start,"seconds")
+
+if __name__ == "__main__":
+	main()

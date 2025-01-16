@@ -107,8 +107,9 @@ def check_deidentification(PATH,patient_list,print_results=True):
 #if dcm.read_file(PATH).PatientIdentityRemoved != 'YES':
   #  print("ATTENTION: ")
 
+def main():
 
-if __name__ == "__main__":
+
     start = time.time()
 
     PATH = config['PATH']
@@ -152,3 +153,7 @@ if __name__ == "__main__":
     end = time.time()
     print("***TOTAL TIME***")
     print(end-start,"seconds")
+
+
+if __name__ == "__main__":
+    main()
