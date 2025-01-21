@@ -20,7 +20,8 @@ The research in our lab requires a large dataset of CBCT scans to model imaging 
 Rather than opening each individual CT slice file, which would be very slow, the code uses the DICOM-RT Structure Set files to sort the images. The Structure Set file contains the label (name given in the TPS) which is used to create each image directory, and also contains a list of the CT slice UIDs it refers to, which are used to copy over the corresponding CT files. A visual representation of how the code works is shown below: 
 
 <p align="center">
-	<img src="https://github.com/user-attachments/assets/c0ebc43d-d971-4711-b4c2-c70a7f439871" width="800">
+	<img src="https://github.com/user-attachments/assets/0aca2b1e-07f0-4c30-bf26-f12b3728b02d" width="800">
+
 </p>
 
 ## Dependencies
