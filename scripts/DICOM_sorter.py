@@ -304,13 +304,13 @@ def sort_image_files_by_RS(PATH):
 		# Catch exception if RD file doesn't belong to any of the images downloaded
 		try:
 			if system == "Windows":
-				os.system("sudo mv " + PATH+file +" " + uid_dict[frame_of_reference_uid]+"/"+file)
-			else:
 				os.system("move " + PATH+file +" " + uid_dict[frame_of_reference_uid]+"/"+file)
+			else:
+				os.system("sudo mv " + PATH+file +" " + uid_dict[frame_of_reference_uid]+"/"+file)
+			RD_count += 1
 		except:
 			print("could not move file ", file, " with frame of ref uid ",frame_of_reference_uid)
-		else:
-			RD_count += 1
+			
 
 	# Organize the dose (RP) files into the appropriate directories based on FrameOfReferenceUID
 	for file in list_RP:
