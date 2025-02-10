@@ -70,7 +70,7 @@ def reformat_multiple_patients(list_patients,PATH):
 		print("--------------------------------------------------------------------------------")
 		patient_path = PATH + str(patient) + "/"
 
-		reformat_directory(patient_path,system)
+		reformat_directory(patient_path)
 
 	
 
