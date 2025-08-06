@@ -4,7 +4,7 @@ PATH is the only variable you NEED to change, but it is recommended to change th
 '''
 
 config = {
-	'PATH':'/mnt/iDriveShare/Kayla/CBCT_images/REMOVED/', # list to patient directories
+	'PATH':'C:\\Users\\kosul\\Documents (PC)\\PhD\\example_sort\\',#rtog-hea-and-neck-cetuximab/', # list to patient directories
 	'CT_keyword':'CT_', # A keyword present in all CT names from the TPS, helps to differentiate between CBCT names
 	'CT_name_min_length':0, # minimum string length of CT name
 	'CT_name_max_length':16, # maximum string length allowed in Structure Set Label tag = 16

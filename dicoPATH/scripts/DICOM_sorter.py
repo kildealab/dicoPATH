@@ -20,6 +20,10 @@ dict_class_UID = {'1.2.840.10008.5.1.4.1.1.2': 'CT',
 				  '1.2.840.10008.5.1.4.1.1.4': 'MR', 
 				  '1.2.840.10008.5.1.4.1.1.128':'PE'}
 
+dict_RT_class_UID = {'1.2.840.10008.5.1.4.1.1.481.5': 'RP',
+					 '1.2.840.10008.5.1.4.1.1.481.3': 'RS',
+					'1.2.840.10008.5.1.4.1.1.481.2': 'RD',	}
+
 system = platform.system()
 print(system)
 
@@ -183,7 +187,7 @@ def sort_image_files_by_RS(PATH):
 		if 'RE' in file:
 			list_RE.append(file)
 		elif 'RS' in file:
-			 list_RS.append(file)
+			list_RS.append(file)
 		elif 'RD' in file:
 			list_RD.append(file)
 		elif 'RP' in file:
@@ -370,6 +374,71 @@ def remove_unneeded_RE_files(PATH):
 		# 	os.system("sudo rm " + PATH+file)
 
 
+def sort_remaining_files_no_RS(patient_path):
+	file_list = os.listdir(patient_path)
+	if len(file_list) == 0:
+		print("No files left to sort in patient directory.")
+		return 
+	print("Sorting remaining files")
+	dict_unsorted_study_uids = {}
+	dict_classes_unsorted = {}
+	full_prefix_dict = {}
+	# Sort remaining files that were not sorted by RS file
+	for file in file_list:
+		if file.endswith('.dcm'):
+			try:
+				d = dcm.read_file(os.path.join(patient_path+file))
+				uid_d = d.StudyInstanceUID
+
+				
+				uid_class = d.SOPClassUID
+				
+				if uid_class in dict_class_UID:
+					if uid_d not in dict_classes_unsorted:
+						dict_classes_unsorted[uid_d] = dict_class_UID[uid_class]
+					prefix = dict_class_UID[uid_class]
+				elif uid_class in dict_RT_class_UID:
+					prefix = dict_RT_class_UID[uid_class]
+
+				if file[0:2] != prefix:
+					full_prefix_dict[file] = prefix+'.'
+				else:
+					full_prefix_dict[file] = ''
+ 						# print()
+					# else:
+					# 	dict_classes_unsorted[uid_d] = ''
+					# 	print(uid_class, " not in dict_class_UID")
+					# print(dict_classes_unsorted[uid_d])
+				
+				
+				if uid_d not in dict_unsorted_study_uids:
+					dict_unsorted_study_uids[uid_d] = []
+				dict_unsorted_study_uids[uid_d].append(file)
+			except:
+				print("Could not read file: ", file)
+				continue
+	# Create directories for each study UID and move files into them
+	for uid, files in dict_unsorted_study_uids.items():
+		new_path = os.path.join(patient_path,dict_classes_unsorted[uid]+"_"+uid)
+		if not os.path.exists(new_path):
+			if system == "Windows":
+				os.makedirs(new_path)
+			else:
+				os.system("sudo mkdir " + new_path)	
+			print("Created directory "+new_path)
+		for file in files:
+			source = os.path.abspath(os.path.join(patient_path, file))
+			destination = os.path.abspath(os.path.join(new_path,full_prefix_dict[file]+file))
+			# print(source, destination)
+
+			if system == "Windows":
+				os.system(f'move "{source}" "{destination}"')
+			else:
+				os.system(f'sudo mv "{source}" "{destination}"')
+
+		
+			
+
 
 
 def organize_multiple_patients(list_patients, PATH):
@@ -388,9 +457,11 @@ def organize_multiple_patients(list_patients, PATH):
 
 		# Call each sorting function
 		remove_RI_RT_files(patient_path)
-		remove_non_CT_image_files(patient_path)
+		# remove_non_CT_image_files(patient_path)
 		sort_image_files_by_RS(patient_path)
 		remove_unneeded_RE_files(patient_path)
+		sort_remaining_files_no_RS(patient_path)
+
 
 		# Print files that were not sorted
 		print("Files Remaining:")
