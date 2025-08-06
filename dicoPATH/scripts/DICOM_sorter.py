@@ -383,6 +383,7 @@ def sort_remaining_files_no_RS(patient_path):
 	dict_unsorted_study_uids = {}
 	dict_classes_unsorted = {}
 	full_prefix_dict = {}
+	fram_of_ref_dict = {} # for RE files
 	# Sort remaining files that were not sorted by RS file
 	for file in file_list:
 		if file.endswith('.dcm'):
@@ -391,9 +392,14 @@ def sort_remaining_files_no_RS(patient_path):
 				uid_d = d.StudyInstanceUID
 
 				
+
 				uid_class = d.SOPClassUID
 				
 				if uid_class in dict_class_UID:
+					
+					frame_uid = d.FrameOfReferenceUID
+					if frame_uid not in fram_of_ref_dict:
+						fram_of_ref_dict[frame_uid] = uid_d
 					if uid_d not in dict_classes_unsorted:
 						dict_classes_unsorted[uid_d] = dict_class_UID[uid_class]
 					prefix = dict_class_UID[uid_class]
@@ -419,25 +425,42 @@ def sort_remaining_files_no_RS(patient_path):
 				continue
 	# Create directories for each study UID and move files into them
 	for uid, files in dict_unsorted_study_uids.items():
-		new_path = os.path.join(patient_path,dict_classes_unsorted[uid]+"_"+uid)
-		if not os.path.exists(new_path):
-			if system == "Windows":
-				os.makedirs(new_path)
-			else:
-				os.system("sudo mkdir " + new_path)	
-			print("Created directory "+new_path)
-		for file in files:
-			source = os.path.abspath(os.path.join(patient_path, file))
-			destination = os.path.abspath(os.path.join(new_path,full_prefix_dict[file]+file))
-			# print(source, destination)
+		if uid in dict_classes_unsorted:
+			new_path = os.path.join(patient_path,dict_classes_unsorted[uid]+"_"+uid)
+			if not os.path.exists(new_path):
+				if system == "Windows":
+					os.makedirs(new_path)
+				else:
+					os.system("sudo mkdir " + new_path)	
+				print("Created directory "+new_path)
+			for file in files:
+				source = os.path.abspath(os.path.join(patient_path, file))
+				destination = os.path.abspath(os.path.join(new_path,full_prefix_dict[file]+file))
+				# print(source, destination)
 
-			if system == "Windows":
-				os.system(f'move "{source}" "{destination}"')
-			else:
-				os.system(f'sudo mv "{source}" "{destination}"')
+				if system == "Windows":
+					os.system(f'move "{source}" "{destination}"')
+				else:
+					os.system(f'sudo mv "{source}" "{destination}"')
 
-		
-			
+	# sort remaining RE files
+	for file in [f for f in os.listdir(patient_path) if f[0:2] =='RE']:
+		print(file)
+
+		d = dcm.read_file(os.path.join(patient_path,file))
+
+		for seq in d.RegistrationSequence:
+			if seq.MatrixRegistrationSequence[0].MatrixSequence[0].FrameOfReferenceTransformationMatrix != [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]:
+				frame_of_reference_uid = seq.FrameOfReferenceUID
+				print(frame_of_reference_uid)
+				if frame_of_reference_uid in fram_of_ref_dict:
+					new_path = os.path.join(patient_path,dict_classes_unsorted[fram_of_ref_dict[frame_of_reference_uid]]+"_"+fram_of_ref_dict[frame_of_reference_uid])
+					source = os.path.abspath(os.path.join(patient_path, file))
+					destination = os.path.abspath(os.path.join(new_path,file))
+					if system == "Windows":
+						os.system(f'move "{source}" "{destination}"')
+					else:
+						os.system(f'sudo mv "{source}" "{destination}"')
 
 
 
@@ -459,7 +482,7 @@ def organize_multiple_patients(list_patients, PATH):
 		remove_RI_RT_files(patient_path)
 		# remove_non_CT_image_files(patient_path)
 		sort_image_files_by_RS(patient_path)
-		remove_unneeded_RE_files(patient_path)
+		# remove_unneeded_RE_files(patient_path)
 		sort_remaining_files_no_RS(patient_path)
 
 
