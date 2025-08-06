@@ -402,6 +402,7 @@ def sort_remaining_files_no_RS(patient_path):
 				continue
 	# Create directories for each study UID and move files into them
 	for uid, files in dict_unsorted_study_uids.items():
+		print(dict_classes_unsorted)
 		new_path = os.path.join(patient_path,dict_class_UID[uid]+"_"+uid)
 		if not os.path.exists(new_path):
 			if system == "Windows":
