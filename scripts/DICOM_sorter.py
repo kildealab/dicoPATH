@@ -183,7 +183,7 @@ def sort_image_files_by_RS(PATH):
 		if 'RE' in file:
 			list_RE.append(file)
 		elif 'RS' in file:
-			 list_RS.append(file)
+			list_RS.append(file)
 		elif 'RD' in file:
 			list_RD.append(file)
 		elif 'RP' in file:
@@ -370,6 +370,48 @@ def remove_unneeded_RE_files(PATH):
 		# 	os.system("sudo rm " + PATH+file)
 
 
+def sort_remaining_files_no_RS(patient_path):
+	file_list = os.listdir(patient_path)
+	if len(file_list) == 0:
+		print("No files left to sort in patient directory.")
+		return 
+
+	dict_unsorted_study_uids = {}
+	dict_classes_unsorted = {}
+	# Sort remaining files that were not sorted by RS file
+	for file in file_list:
+		if file.endswith('.dcm'):
+			try:
+				d = dcm.read_file(os.path.join(patient_path+file))
+				uid_d = d.StudyInstanceUID
+				if uid_d not in dict_classes_unsorted:
+					uid_class = d.SOPClassUID
+					if uid_class in dict_class_UID:
+						dict_classes_unsorted[uid_d] = dict_class_UID[uid_class]
+						# print()
+					else:
+						dict_classes_unsorted[uid_d] = ''
+					print(dict_classes_unsorted[uid_d])
+				
+				
+				if uid_d not in dict_unsorted_study_uids:
+					dict_unsorted_study_uids[uid_d] = []
+				dict_unsorted_study_uids[uid_d].append(file)
+			except:
+				print("Could not read file: ", file)
+				continue
+	# Create directories for each study UID and move files into them
+	for uid, files in dict_unsorted_study_uids.items():
+		new_path = os.path.join(patient_path,dict_class_UID[uid]+"_"+uid)
+		if not os.path.exists(new_path):
+			if system == "Windows":
+				os.makedirs(new_path)
+			else:
+				os.system("sudo mkdir " + new_path)	
+			print("Created directory "+new_path)
+		
+			
+
 
 
 def organize_multiple_patients(list_patients, PATH):
@@ -388,9 +430,11 @@ def organize_multiple_patients(list_patients, PATH):
 
 		# Call each sorting function
 		remove_RI_RT_files(patient_path)
-		remove_non_CT_image_files(patient_path)
+		# remove_non_CT_image_files(patient_path)
 		sort_image_files_by_RS(patient_path)
 		remove_unneeded_RE_files(patient_path)
+		sort_remaining_files_no_RS(patient_path)
+
 
 		# Print files that were not sorted
 		print("Files Remaining:")
