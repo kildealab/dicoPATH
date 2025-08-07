@@ -17,7 +17,7 @@ This repo also contains instructions for downloading DICOM data from the TPS, as
 The research in our lab requires a large dataset of CBCT scans to model imaging changes over the course of radiotherapy. The previous method for obtaining these CBCTs was to export them one by one from the TPS in order to keep them organized. However, this process is very slow, and exporting all of the files at once per patient resulted in a large dump of unorganized DICOM files. Therefore, I created this sorting script to sort CBCT, planning CT, and related DICOM-RT and registration files into organized directories with the same names as they are stored in the TPS. 
 
 #### Overview of how the sorting works
-Rather than opening each individual CT slice file, which would be very slow, the code uses the DICOM-RT Structure Set files to sort the images. The Structure Set file contains the label (name given in the TPS) which is used to create each image directory, and also contains a list of the CT slice UIDs it refers to, which are used to copy over the corresponding CT files. A visual representation of how the code works is shown below: 
+Rather than opening each individual CT slice file, which would be very slow, the code uses the DICOM-RT Structure Set files to sort the images. The Structure Set file contains the label (name given in the TPS) which is used to create each image directory, and also contains a list of the CT slice UIDs it refers to, which are used to copy over the corresponding CT files. All remaining unsorted files (without RS files) are then sorted by Study UID and image type by opening each file individually. A visual representation of how the code works is shown below: 
 
 <p align="center">
 	<img src="https://github.com/user-attachments/assets/0aca2b1e-07f0-4c30-bf26-f12b3728b02d" width="800">
@@ -41,10 +41,11 @@ Rather than opening each individual CT slice file, which would be very slow, the
    Note: the requirements include the line ```-e .```, which installs the current package with editing permissions. This will allow you to call the scripts below, and the ```-e``` flag allows you to edit code in the package without reinstalling.
    
 ## Usage
-### Downloading data from the Treatment Planning System
+### [Optional if Needed]: Downloading data from the Treatment Planning System
 Instructions for downloading DICOM data from the Varian Eclipse TPS (tested on versions 15 and 18) can be found here: [TPS Download Instructions](https://docs.google.com/document/d/1NtpMWKvi45IYjV2Tp65CwWPKFmXAfJu6idoXx9AcafA/edit?usp=sharing).
-Files should be exported all at once per patient, each in their own patient directory. Unfortunately, this export process must be done manually once per patient, but the script itself will run on all patients at once.
+Files should be exported all at once per patient, each in their own patient directory. Unfortunately, this export process must be done manually once per patient, but the script itself will run on all patients at once. It works best if the 'Retain Dates' option is chosen during anonymization on export.
 
+### Expected directory structure
 The code expects that each patient has their own directory with a dump of unorganized DICOM files for all images, like so (note the patient directories can have any names):
 ```
 /path/to/patient/directories/ 
