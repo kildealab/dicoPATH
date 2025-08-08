@@ -334,11 +334,11 @@ def sort_image_files_by_RS(PATH):
 
 
 	
-	# Display other file types caught
-	if len(other) != 0:
-		print("Other files not moved:")
-		for file in other:
-			print(file)
+	# # Display other file types caught
+	# if len(other) != 0:
+	# 	print("Other files not moved:")
+	# 	for file in other:
+	# 		print(file)
 	
 	print("--------------------------------------------------------------------------------")
 	print("Files moved: ",CT_count, " CT, ", RS_count, " RS, ", RE_count, " RE, ",RD_count, " RD",RP_count, " RP")
@@ -383,25 +383,45 @@ def sort_remaining_files_no_RS(patient_path):
 	dict_unsorted_study_uids = {}
 	dict_classes_unsorted = {}
 	full_prefix_dict = {}
+	dir_prefix_dict = {}
 	fram_of_ref_dict = {} # for RE files
 	# Sort remaining files that were not sorted by RS file
 	for file in file_list:
 		if file.endswith('.dcm'):
-			try:
+			# try:
 				d = dcm.read_file(os.path.join(patient_path+file))
-				uid_d = d.StudyInstanceUID
-
 				
+				# Use series number instead of UID since it's shorter.
+				try:
+					uid_d = str(d.SeriesNumber)
+				except:
+					uid_d = d.SeriesInstanceUID
+			
+				if len(uid_d) == 0: # if no sesries number, use uid
+					uid_d = d.SeriesInstanceUID
+
+				# if uid_d not in date_dict:
+				# 	date_dict[uid_d] = d.SeriesDate
+
+				# series_date = d.SeriesDate
 
 				uid_class = d.SOPClassUID
+
 				
 				if uid_class in dict_class_UID:
-					
+					modality = dict_class_UID[uid_class] # Could just use modality tag
 					frame_uid = d.FrameOfReferenceUID
+
 					if frame_uid not in fram_of_ref_dict:
 						fram_of_ref_dict[frame_uid] = uid_d
 					if uid_d not in dict_classes_unsorted:
-						dict_classes_unsorted[uid_d] = dict_class_UID[uid_class]
+						dir_prefix = ''
+						if d.SeriesDate != '':
+							dir_prefix = d.SeriesDate
+						dir_prefix = dir_prefix + '_' + modality
+						if modality == 'MR':
+							dir_prefix = dir_prefix + "_" + d.ScanningSequence
+						dict_classes_unsorted[uid_d] = dir_prefix
 					prefix = dict_class_UID[uid_class]
 				elif uid_class in dict_RT_class_UID:
 					prefix = dict_RT_class_UID[uid_class]
@@ -420,9 +440,9 @@ def sort_remaining_files_no_RS(patient_path):
 				if uid_d not in dict_unsorted_study_uids:
 					dict_unsorted_study_uids[uid_d] = []
 				dict_unsorted_study_uids[uid_d].append(file)
-			except:
-				print("Could not read file: ", file)
-				continue
+			# except:
+			# 	print("Could not read file: ", file)
+			# 	continue
 	# Create directories for each study UID and move files into them
 	for uid, files in dict_unsorted_study_uids.items():
 		if uid in dict_classes_unsorted:
@@ -445,7 +465,7 @@ def sort_remaining_files_no_RS(patient_path):
 
 	# sort remaining RE files
 	for file in [f for f in os.listdir(patient_path) if f[0:2] =='RE']:
-		print(file)
+		# print(file)
 
 		d = dcm.read_file(os.path.join(patient_path,file))
 
