@@ -379,7 +379,7 @@ def sort_remaining_files_no_RS(patient_path):
 	if len(file_list) == 0:
 		print("No files left to sort in patient directory.")
 		return 
-	print("Sorting remaining files")
+	print("Sorting remaining files...")
 	dict_unsorted_study_uids = {}
 	dict_classes_unsorted = {}
 	full_prefix_dict = {}
@@ -407,6 +407,7 @@ def sort_remaining_files_no_RS(patient_path):
 
 				uid_class = d.SOPClassUID
 
+				prefix = ''
 				
 				if uid_class in dict_class_UID:
 					modality = dict_class_UID[uid_class] # Could just use modality tag
@@ -472,7 +473,6 @@ def sort_remaining_files_no_RS(patient_path):
 		for seq in d.RegistrationSequence:
 			if seq.MatrixRegistrationSequence[0].MatrixSequence[0].FrameOfReferenceTransformationMatrix != [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]:
 				frame_of_reference_uid = seq.FrameOfReferenceUID
-				print(frame_of_reference_uid)
 				if frame_of_reference_uid in fram_of_ref_dict:
 					new_path = os.path.join(patient_path,dict_classes_unsorted[fram_of_ref_dict[frame_of_reference_uid]]+"_"+fram_of_ref_dict[frame_of_reference_uid])
 					source = os.path.abspath(os.path.join(patient_path, file))
