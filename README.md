@@ -1,5 +1,5 @@
 # dicoPATH
-A python script for sorting DICOM images (mainly planning CTs and CBCTs), DICOM-RT data, and DICOM registration files exported from the Varian Eclipse Treatment Planning System (TPS). This code has been tested on data exported from Eclipse versions 15 and 18.
+A python script for sorting DICOM images (mainly planning CTs and CBCTs), DICOM-RT data, and DICOM registration files. For data exported from the Varian Eclipse Treatment Planning System (TPS), the code retains the planning CT and CBCT naming from the TPS. This code has been tested on data exported from Eclipse versions 15 and 18.
 
 This repo also contains instructions for downloading DICOM data from the TPS, as well as some additional scripts, including: reformatting CBCT directory names, checking if DICOMs are deidentified, checking for missing registration files, and checking for multiple CBCTs from the same treatment fraction.
 
