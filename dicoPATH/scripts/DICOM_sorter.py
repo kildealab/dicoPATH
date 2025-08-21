@@ -421,7 +421,11 @@ def sort_remaining_files_no_RS(patient_path):
 							dir_prefix = d.SeriesDate
 						dir_prefix = dir_prefix + '_' + modality
 						if modality == 'MR':
-							dir_prefix = dir_prefix + "_" + d.ScanningSequence
+							dir_prefix = dir_prefix + "_" + d.ScanningSequence 
+							try: 
+								dir_prefix = dir_prefix + "_" + d.SeriesDescription.replace(" ","")
+							except:
+								dir_prefix = dir_prefix
 						dict_classes_unsorted[uid_d] = dir_prefix
 					prefix = dict_class_UID[uid_class]
 				elif uid_class in dict_RT_class_UID:
